@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.net.URL
 
-class urlToBitmap(private val url: String) {
+class UrlToBitmap(private val url: String) {
 
     fun getImage(): Bitmap {
         val url = URL(url)

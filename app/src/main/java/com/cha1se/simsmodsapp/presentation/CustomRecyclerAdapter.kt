@@ -1,14 +1,17 @@
-package com.cha1se.simsmodsapp
+package com.cha1se.simsmodsapp.presentation
 
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.cha1se.domain.models.imgListModel
+import com.cha1se.domain.models.titleListModel
+import com.cha1se.simsmodsapp.R
+import io.reactivex.disposables.Disposable
 
-class CustomRecyclerAdapter(private val names: List<String>, private val img: List<Bitmap>) : RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+class CustomRecyclerAdapter(private val names: titleListModel, private val img: imgListModel) : RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameMod: TextView = itemView.findViewById(R.id.nameMod)
@@ -23,10 +26,11 @@ class CustomRecyclerAdapter(private val names: List<String>, private val img: Li
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.nameMod.text = names[position]
-        holder.imageView.setImageBitmap(img[position])
+        holder.nameMod.text =
+            names.titlesList[position]
+        holder.imageView.setImageBitmap(img.pictureList[position])
     }
 
-    override fun getItemCount() = names.size
+    override fun getItemCount() = names.titlesList.size
 
 }

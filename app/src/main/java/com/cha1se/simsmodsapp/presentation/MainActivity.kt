@@ -1,25 +1,30 @@
-package com.cha1se.simsmodsapp
+package com.cha1se.simsmodsapp.presentation
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Observable
+import com.cha1se.data.repository.dataRepositoryImpl
+import com.cha1se.domain.models.imgListModel
+import com.cha1se.domain.models.titleListModel
+import com.cha1se.domain.repository.dataRepository
+import com.cha1se.domain.usecase.getImgListUseCase
+import com.cha1se.domain.usecase.getTitleListUseCase
+import com.cha1se.simsmodsapp.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.net.URL
+import javax.security.auth.login.LoginException
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var imgView: ImageView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var getTitleListUseCase: getTitleListUseCase
+    private lateinit var getImgListUseCase: getImgListUseCase
+    private lateinit var dataRepository: dataRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +34,31 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        dataRepository = dataRepositoryImpl()
+        getTitleListUseCase = getTitleListUseCase(dataRepository)
+        getImgListUseCase = getImgListUseCase(dataRepository)
 
-        httpConnect()
+        var titles: titleListModel
+        var imgs: imgListModel
+
+
+        getTitleListUseCase.execute()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                titles = it
+                getImgListUseCase.execute()
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        recyclerView.adapter = CustomRecyclerAdapter(titles, it)
+                    }, {Log.e("TAG", it.message.toString())})
+            }, { Log.e("TAG", it.message.toString())})
+
+
     }
 
-    fun httpConnect() {
+ /*   fun httpConnect() {
         lateinit var bitmap: Bitmap
         var data = mutableListOf<String>()
         var imgBitmap = mutableListOf<Bitmap>()
@@ -81,6 +106,6 @@ class MainActivity : AppCompatActivity() {
         val image = BitmapFactory.decodeStream(url.openStream())
 
         return image
-    }
+    }*/
 }
 
